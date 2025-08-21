@@ -3,14 +3,16 @@ package recorder
 import (
 	"fmt"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/xh3b4sd/tracer"
-	"go.opentelemetry.io/otel/exporters/prometheus"
+	exporter "go.opentelemetry.io/otel/exporters/prometheus"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 )
 
 type MeterConfig struct {
 	Env string
+	Reg prometheus.Registerer // optional
 	Sco string
 	Ver string
 }
@@ -28,9 +30,14 @@ func NewMeter(c MeterConfig) otelmetric.Meter {
 
 	var err error
 
-	var exp *prometheus.Exporter
+	var opt []exporter.Option
+	if c.Reg != nil {
+		opt = append(opt, exporter.WithRegisterer(c.Reg))
+	}
+
+	var exp *exporter.Exporter
 	{
-		exp, err = prometheus.New()
+		exp, err = exporter.New(opt...)
 		if err != nil {
 			tracer.Panic(tracer.Mask(err))
 		}
