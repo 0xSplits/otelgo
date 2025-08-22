@@ -31,6 +31,10 @@ func NewMeter(c MeterConfig) otelmetric.Meter {
 	var err error
 
 	var opt []exporter.Option
+	{
+		opt = append(opt, exporter.WithoutCounterSuffixes())
+	}
+
 	if c.Reg != nil {
 		opt = append(opt, exporter.WithRegisterer(c.Reg))
 	}
