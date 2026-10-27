@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/otlptranslator"
 	"github.com/xh3b4sd/tracer"
 	exporter "go.opentelemetry.io/otel/exporters/prometheus"
 	otelmetric "go.opentelemetry.io/otel/metric"
@@ -32,7 +33,7 @@ func NewMeter(c MeterConfig) otelmetric.Meter {
 
 	var opt []exporter.Option
 	{
-		opt = append(opt, exporter.WithoutCounterSuffixes())
+		opt = append(opt, exporter.WithTranslationStrategy(otlptranslator.UnderscoreEscapingWithoutSuffixes))
 	}
 
 	if c.Reg != nil {
